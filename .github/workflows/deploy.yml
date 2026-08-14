@@ -6,8 +6,8 @@ on:
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: school-portal-backend
-  ECS_SERVICE: school-portal-c377  # use your existing service name
-  ECS_CLUSTER: school-portal-c377  # use your existing cluster name
+  ECS_SERVICE: school-portal-backend-service  # <-- UPDATED
+  ECS_CLUSTER: school-portal-backend          # <-- UPDATED
   CONTAINER_NAME: backend
 
 jobs:
