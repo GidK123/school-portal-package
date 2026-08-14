@@ -1,18 +1,18 @@
-name: Deploy to ECS
+name: Deploy Backend to ECS
 on:
   push:
     branches: [ "main" ]
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: school-portal
-  ECS_SERVICE: school-portal-c377
-  ECS_CLUSTER: school-portal-c377
-  CONTAINER_NAME: school-portal
+  ECR_REPOSITORY: school-portal-backend   # changed name so it's separate from frontend
+  ECS_SERVICE: school-portal-backend-c377  # update this to match your ECS service name
+  ECS_CLUSTER: school-portal-backend-c377  # update this to match your ECS cluster name
+  CONTAINER_NAME: backend
 
 jobs:
   deploy:
-    name: Deploy
+    name: Deploy Backend
     runs-on: ubuntu-latest
 
     steps:
@@ -30,13 +30,18 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
 
+    - name: Create ECR repo if it doesn't exist
+      run: |
+        aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
+
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        # The key part: build from ./backend folder
+        docker build -f backend/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./backend
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
