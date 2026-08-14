@@ -5,9 +5,9 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: school-portal-backend   # changed name so it's separate from frontend
-  ECS_SERVICE: school-portal-backend-c377  # update this to match your ECS service name
-  ECS_CLUSTER: school-portal-backend-c377  # update this to match your ECS cluster name
+  ECR_REPOSITORY: school-portal-backend
+  ECS_SERVICE: school-portal-c377  # use your existing service name
+  ECS_CLUSTER: school-portal-c377  # use your existing cluster name
   CONTAINER_NAME: backend
 
 jobs:
@@ -40,8 +40,8 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        # The key part: build from ./backend folder
-        docker build -f backend/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./backend
+        # Build from ROOT, not ./backend
+        docker build -f Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
