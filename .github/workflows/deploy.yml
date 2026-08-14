@@ -8,7 +8,7 @@ env:
   ECR_REPOSITORY: school-portal-backend
   ECS_SERVICE: school-portal-backend-service
   ECS_CLUSTER: school-portal-backend
-  CONTAINER_NAME: backend  # <-- Confirmed from your screenshot
+  CONTAINER_NAME: backend
 
 jobs:
   deploy:
@@ -40,7 +40,8 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker build -f backend/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG backend
+        # Build from ROOT
+        docker build -f Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
